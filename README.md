@@ -1,1 +1,1 @@
-C-3PO - simple irc bot made in C
+C-3PO - A simple IRC bot written in C
