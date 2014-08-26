@@ -32,6 +32,8 @@ CFLAGS=-Wall -I.
 c-3po: $(OBJ)
 	$(CC) bin/$^ -o bin/main
 
+all: c-3po
+
 # Delete compiled file
 clean:
 	-$(RM) bin/* 2>/dev/null

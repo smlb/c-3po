@@ -1,6 +1,7 @@
 # C-3PO Specific #
 ##################
-/bin/*
+bin
+bin/*
 
 # Compiled source #
 ###################

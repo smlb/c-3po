@@ -24,9 +24,6 @@
 /* ############## This Bot follow the IRC Standard RFC #############  * 
  * You can see the complete RFC here:                                 * 
  * http://tools.ietf.org/html/rfc1459                                 * 
- *                                                                    * 
- * ########################## Compilation ##########################  *  
- * Compile with gcc main.c -o main				                            * 
  *                                                                    *
  */
  
