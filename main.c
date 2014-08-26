@@ -55,7 +55,10 @@ struct IRC{
 int load_config(char *filename, char* s, int *p, char* n, char* c);
 int save_config(char *filename, char *s, int p, char *n, char *c);
 void c_error(FILE *out, const char *fmt, ...);
+// All bot-related function should start with 'bot_'
 void bot_init(struct IRC *bot, char *s, int p, char *n, char *c);
+int bot_connect(struct IRC *bot);
+void bot_pong(struct IRC *bot, char *buff);
 
 // Global Struct variable (I know isn't a good idea)
 struct IRC bot;
@@ -94,6 +97,10 @@ int main(int argc, char *argv[]){
 	
 	// Now print the bot configuration, tomorrow the world
 	printf("Bot: %s %d %s %s\n", bot.server, bot.port, bot.nick, bot.chan);
+	
+	if(bot_connect(&bot) == -1)
+		return -1;
+		
 	return 0;
 }
 
@@ -152,15 +159,6 @@ int save_config(char *filename, char *s, int p, char *n, char *c){
 	return 0;
 }
 
-// Initialize the bot in the struct
-void bot_init(struct IRC *bot, char *s, int p, char *n, char *c)
-{
-        strcpy(bot->server, s);
-        bot->port = p;
-        strcpy(bot->nick, n);
-        strcpy(bot->chan, c);
-}
-
 // Magic function to throw error to stderr or other file
 void c_error(FILE *out, const char *fmt, ...){
 	// With a va_list we can print string like printf argument
@@ -170,3 +168,68 @@ void c_error(FILE *out, const char *fmt, ...){
 	vfprintf(out, fmt, ap);
 	va_end(ap);
 }
+
+// Initialize the bot in the struct
+void bot_init(struct IRC *bot, char *s, int p, char *n, char *c)
+{
+        strcpy(bot->server, s);
+        bot->port = p;
+        strcpy(bot->nick, n);
+        strcpy(bot->chan, c);
+}
+
+// Connect the bot on the network
+int bot_connect(struct IRC *bot){
+	char buff[515];
+	char recup[515];
+	
+	// So many socket things :(
+	bot->socket = socket(AF_INET, SOCK_STREAM, 0);
+	bot->in.sin_port = htons(bot->port);   
+	bot->in.sin_family = AF_INET;
+	bot->in.sin_addr.s_addr = inet_addr(bot->server);
+	
+	// Try to connect
+	if(connect(bot->socket, (struct sockaddr *)&bot->in, sizeof(bot->in)) == -1){
+		puts("[-]Connect Fail\n");
+		return -1;
+	}
+	
+	// From RFC: USER <username> <hostname> <servername> <realname>
+	sprintf(buff, "USER C3PO NewRepublic StarWars :C3PO\r\n");
+	// From RFC: NICK <nickname>
+	sprintf(buff, "NICK %s\r\n", bot->nick);
+	// From RFC: JOIN <channel> [key]  
+	// Maybe we can support password protected channel (?)
+	sprintf(buff, "JOIN %s\r\n", bot->chan);
+	send(bot->socket, buff, strlen(buff), 0);
+
+	// All the program remain here waiting for channel-input
+	while(1){
+		recv(bot->socket,  recup, sizeof(recup), 0);
+		printf("%s", recup);
+		bot_pong(bot, recup);
+		// Single quote for single Char representation
+		if(recup[0]=='!'){
+			printf("Hey! # %s", recup);
+		}
+		memset(recup, 0, sizeof(recup));
+	}
+
+	close(bot->socket);
+	return 0;
+}
+
+// Bot need pong, otherwise it will kicked out from the server
+void bot_pong(struct IRC *bot, char *buff){
+	char *ptr;
+	char pong[100];
+	
+	// When there is a PING, reply with PONG
+	if(strstr(buff, "PING") != NULL){
+		ptr = strstr(buff, "PING");
+		sprintf(pong, "PONG %s\r\n", ptr+4);
+		send(bot->socket, pong, strlen(pong), 0);
+	}
+} 
+
