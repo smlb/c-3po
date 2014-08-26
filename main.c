@@ -18,70 +18,59 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
- * 
- */
-
-/* ############## This Bot follow the IRC Standard RFC #############  * 
- * You can see the complete RFC here:                                 * 
- * http://tools.ietf.org/html/rfc1459                                 * 
- *                                                                    *
- *                                                                    *
  *                      YOU SHALL NOT PASSS!                          *
- *                                                                    *
  */
  
-#include <stdio.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <netdb.h>
 #include <stdarg.h>
 
 // Simple struct with bot configuration ;)
 struct IRC{
-        int socket;
         char server[100];
-        int port;
+        char port[5];
         char nick[15];
         char chan[20];
-        struct sockaddr_in in;
+        struct addrinfo hints, *res;
 }; 
 
 // Prototypes
-int load_config(char *filename, char* s, int *p, char* n, char* c);
-int save_config(char *filename, char *s, int p, char *n, char *c);
+int load_config(char *filename, char* s, char *p, char* n, char* c);
+int save_config(char *filename, char *s, char *p, char *n, char *c);
 void c_error(FILE *out, const char *fmt, ...);
 // All bot-related function should start with 'bot_'
-void bot_init(struct IRC *bot, char *s, int p, char *n, char *c);
+void bot_init(struct IRC *bot, char *s, char *p, char *n, char *c);
 int bot_connect(struct IRC *bot);
 void bot_pong(struct IRC *bot, char *buff);
+void bot_raw(char *fmt, ...);
 
 // Global Struct variable (I know isn't a good idea)
 struct IRC bot;
+int conn;
+char sbuf[512];
 
 int main(int argc, char *argv[]){
 	printf("C-3PO - 0.0.1\n  This software is under the GPL License\n");
 	
 	// 5 argument - start the bot
 	if(argc == 5){
-		bot_init(&bot, argv[1], atoi(argv[2]), argv[3], argv[4]);
+		bot_init(&bot, argv[1], argv[2], argv[3], argv[4]);
 	}
 	// 6 argument - save configuration and start the bot
 	else if(argc == 6){
-		save_config(argv[5], argv[1], atoi(argv[2]), argv[3], argv[4]);
-		bot_init(&bot, argv[1], atoi(argv[2]), argv[3], argv[4]);
+		save_config(argv[5], argv[1], argv[2], argv[3], argv[4]);
+		bot_init(&bot, argv[1], argv[2], argv[3], argv[4]);
 	}
 	// 2 argument - load configuration and start the bot
 	else if(argc == 2){
 		char server[100];
-		int port=0;
+		char port[5];
 		char nick[15];
 		char chan[20];
-		int result = load_config(argv[argc-1], server, &port, nick, chan);
+		int result = load_config(argv[argc-1], server, port, nick, chan);
 		if(result == 0){
 			bot_init(&bot, server, port, nick, chan);
 		}
@@ -96,7 +85,7 @@ int main(int argc, char *argv[]){
 	}
 	
 	// Now print the bot configuration, tomorrow the world
-	printf("Bot: %s %d %s %s\n", bot.server, bot.port, bot.nick, bot.chan);
+	printf("Bot: %s %s %s %s\n", bot.server, bot.port, bot.nick, bot.chan);
 	
 	if(bot_connect(&bot) == -1)
 		return -1;
@@ -105,7 +94,7 @@ int main(int argc, char *argv[]){
 }
 
 // Load the configuration from file
-int load_config(char *filename, char *s, int *p, char *n, char *c){
+int load_config(char *filename, char *s, char *p, char *n, char *c){
 	FILE *f;
 	char row[128+1];
 	
@@ -126,7 +115,7 @@ int load_config(char *filename, char *s, int *p, char *n, char *c){
 				strcpy(s,row);
 				break;
 			case 1:
-				*p=atoi(row);
+				strcpy(p,row);
 				break;
 			case 2:
 				strcpy(n,row);
@@ -142,7 +131,7 @@ int load_config(char *filename, char *s, int *p, char *n, char *c){
 }
 
 // Save configuration on file
-int save_config(char *filename, char *s, int p, char *n, char *c){
+int save_config(char *filename, char *s, char *p, char *n, char *c){
 	FILE *f;
 	
 	f = fopen(filename,"w");
@@ -151,7 +140,7 @@ int save_config(char *filename, char *s, int p, char *n, char *c){
 		return 1;
 	}
 	// Print configuration line by line
-	fprintf(f,"%s\n%d\n%s\n%s\n", s, p, n, c);
+	fprintf(f,"%s\n%s\n%s\n%s\n", s, p, n, c);
 	// Output to the user
 	printf("Configuration saved on: %s\n", filename);
 	
@@ -170,66 +159,103 @@ void c_error(FILE *out, const char *fmt, ...){
 }
 
 // Initialize the bot in the struct
-void bot_init(struct IRC *bot, char *s, int p, char *n, char *c)
-{
-        strcpy(bot->server, s);
-        bot->port = p;
-        strcpy(bot->nick, n);
-        strcpy(bot->chan, c);
+void bot_init(struct IRC *bot, char *s, char *p, char *n, char *c){
+	strcpy(bot->server, s);
+	strcpy(bot->port, p);
+	strcpy(bot->nick, n);
+	strcpy(bot->chan, c);
+}
+
+// Send message over the connection <3
+void bot_raw(char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(sbuf, 512, fmt, ap);
+    va_end(ap);
+    printf("<< %s", sbuf);
+    write(conn, sbuf, strlen(sbuf));
 }
 
 // Connect the bot on the network
 int bot_connect(struct IRC *bot){
-	char buff[515];
-	char recup[515];
-	
-	// So many socket things :(
-	bot->socket = socket(AF_INET, SOCK_STREAM, 0);
-	bot->in.sin_port = htons(bot->port);   
-	bot->in.sin_family = AF_INET;
-	bot->in.sin_addr.s_addr = inet_addr(bot->server);
+	char *user, *command, *where, *message, *sep, *target;
+	int i, j, l, sl, o = -1, start, wordcount;
+	char buf[513];
+
+	// So many socket things :(	
+	memset(&(bot->hints), 0, sizeof bot->hints);
+	bot->hints.ai_family = AF_INET;
+	bot->hints.ai_socktype = SOCK_STREAM;
+	getaddrinfo(bot->server, bot->port, &(bot->hints), &(bot->res));
+	conn = socket(bot->res->ai_family, bot->res->ai_socktype, bot->res->ai_protocol);
 	
 	// Try to connect
-	if(connect(bot->socket, (struct sockaddr *)&bot->in, sizeof(bot->in)) == -1){
-		puts("[-]Connect Fail\n");
+	if(connect(conn, bot->res->ai_addr, bot->res->ai_addrlen)<0){
+		c_error(stderr,"Error: Connection Failed\n");
 		return -1;
 	}
 	
 	// From RFC: USER <username> <hostname> <servername> <realname>
-	sprintf(buff, "USER C3PO NewRepublic StarWars :C3PO\r\n");
+	bot_raw("USER C-3PO_bot NewRepublic StarWars :C3PO\r\n");
 	// From RFC: NICK <nickname>
-	sprintf(buff, "NICK %s\r\n", bot->nick);
-	// From RFC: JOIN <channel> [key]  
-	// Maybe we can support password protected channel (?)
-	sprintf(buff, "JOIN %s\r\n", bot->chan);
-	send(bot->socket, buff, strlen(buff), 0);
-
+  bot_raw("NICK %s\r\n", bot->nick);
+	
 	// All the program remain here waiting for channel-input
-	while(1){
-		recv(bot->socket,  recup, sizeof(recup), 0);
-		printf("%s", recup);
-		bot_pong(bot, recup);
-		// Single quote for single Char representation
-		if(recup[0]=='!'){
-			printf("Hey! # %s", recup);
-		}
-		memset(recup, 0, sizeof(recup));
+	while ((sl = read(conn, sbuf, 512))) {
+		// Read the message char by char
+		for (i = 0; i < sl; i++) {
+			o++;
+			buf[o] = sbuf[i];
+			// If the char is  endline \r\n
+			if ((i > 0 && sbuf[i] == '\n' && sbuf[i - 1] == '\r') || o == 512) {
+				buf[o + 1] = '\0';
+				l = o;
+				o = -1;
+				
+				// Log into the terminal
+				printf(">> %s", buf);
+				
+				// When there is a PING, reply with PONG
+				if (!strncmp(buf, "PING", 4)) {
+					buf[1] = 'O';
+					bot_raw(buf);
+				} else if (buf[0] == ':') {
+					wordcount = 0;
+					user = command = where = message = NULL;
+					for (j = 1; j < l; j++) {
+						if (buf[j] == ' ') {
+							buf[j] = '\0';
+							wordcount++;
+							switch(wordcount) {
+								case 1: user = buf + 1; break;
+								case 2: command = buf + start; break;
+								case 3: where = buf + start; break;
+							}
+							if (j == l - 1) continue;
+							start = j + 1;
+						} else if (buf[j] == ':' && wordcount == 3) {
+							if (j < l - 1) message = buf + j + 1;
+							break;
+						}
+					}
+					
+					if (wordcount < 2) continue;
+					
+					if (!strncmp(command, "001", 3) && bot->chan != NULL) {
+						// From RFC: JOIN <channel> [key]  
+						// Maybe we can support password protected channel (?)
+						bot_raw("JOIN %s\r\n", bot->chan);
+						bot_raw("PRIVMSG %s :Hello world!\r\n", bot->chan);
+					} else if (!strncmp(command, "PRIVMSG", 7) || !strncmp(command, "NOTICE", 6)) {
+						if (where == NULL || message == NULL) continue;
+						if ((sep = strchr(user, '!')) != NULL) user[sep - user] = '\0';
+						if (where[0] == '#' || where[0] == '&' || where[0] == '+' || where[0] == '!') target = where; else target = user;
+						printf("[from: %s] [reply-with: %s] [where: %s] [reply-to: %s] %s", user, command, where, target, message);
+					}
+				}
+			}
+		} 
 	}
-
-	close(bot->socket);
 	return 0;
 }
-
-// Bot need pong, otherwise it will kicked out from the server
-void bot_pong(struct IRC *bot, char *buff){
-	char *ptr;
-	char pong[100];
-	
-	// When there is a PING, reply with PONG
-	if(strstr(buff, "PING") != NULL){
-		ptr = strstr(buff, "PING");
-		sprintf(pong, "PONG %s\r\n", ptr+4);
-		send(bot->socket, pong, strlen(pong), 0);
-	}
-} 
 
