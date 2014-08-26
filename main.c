@@ -122,7 +122,7 @@ int load_config(char *filename, char *s, int *p, char *n, char *c){
 				*p=atoi(row);
 				break;
 			case 2:
-i				strcpy(n,row);
+				strcpy(n,row);
 				break;
 			case 3:
 				strcpy(c,row);
