@@ -68,18 +68,18 @@ int main(int argc, char *argv[]){
 		init_bot(&bot, argv[1], atoi(argv[2]), argv[3], argv[4]);
 	}
 	// 6 argument - save configuration and start the bot
-	else if(argc==6){
+	else if(argc == 6){
 		save_config(argv[5], argv[1], atoi(argv[2]), argv[3], argv[4]);
 		init_bot(&bot, argv[1], atoi(argv[2]), argv[3], argv[4]);
 	}
 	// 2 argument - load configuration and start the bot
-	else if(argc==2){
+	else if(argc == 2){
 		char server[100];
 		int port=0;
 		char nick[15];
 		char chan[20];
-		int result=load_config(argv[argc-1],server,&port,nick,chan);
-		if(result==0){
+		int result = load_config(argv[argc-1], server, &port, nick, chan);
+		if(result == 0){
 			init_bot(&bot, server, port, nick, chan);
 		}
 		else {
@@ -88,12 +88,12 @@ int main(int argc, char *argv[]){
 	}
 	// You had only one job.
 	else {
-		c_error(stderr,"Error: Only %d Argument, 2, 5 or 6 needed \nSintax: %s <ip> <port> <nick> <chan>\nSintax: %s <ip> <port> <nick> <chan> <config_file>\nSintax: %s <config_file>\n  Insert chan escaped with \\ (\\#free or \\#\\#beer)\n",argc,argv[0],argv[0],argv[0]);
+		c_error(stderr,"Error: Only %d Argument, 2, 5 or 6 needed \nSintax: %s <ip> <port> <nick> <chan>\nSintax: %s <ip> <port> <nick> <chan> <config_file>\nSintax: %s <config_file>\n  Insert chan escaped with \\ (\\#free or \\#\\#beer)\n", argc, argv[0], argv[0], argv[0]);
 		exit(1);
 	}
 	
 	// Now print the bot configuration, tomorrow the world
-	printf("Bot: %s %d %s %s\n",bot.server,bot.port,bot.nick,bot.chan);
+	printf("Bot: %s %d %s %s\n", bot.server, bot.port, bot.nick, bot.chan);
 	return 0;
 }
 
@@ -110,9 +110,9 @@ int load_config(char *filename, char *s, int *p, char *n, char *c){
 	
 	// Load the file line by line
 	// Yes it's a strange for
-	for(int i;fgets(row,128,f)!=NULL;i++){  
-		if(row[strlen(row)-1]=='\n'){
-			row[strlen(row)-1]='\0';
+	for(int i; fgets(row,128,f) != NULL; i++){  
+		if(row[strlen(row)-1] == '\n'){
+			row[strlen(row)-1] = '\0';
 		}
 		switch(i){
 			case 0:	
@@ -122,7 +122,7 @@ int load_config(char *filename, char *s, int *p, char *n, char *c){
 				*p=atoi(row);
 				break;
 			case 2:
-				strcpy(n,row);
+i				strcpy(n,row);
 				break;
 			case 3:
 				strcpy(c,row);
@@ -144,9 +144,9 @@ int save_config(char *filename, char *s, int p, char *n, char *c){
 		return 1;
 	}
 	// Print configuration line by line
-	fprintf(f,"%s\n%d\n%s\n%s\n",s,p,n,c);
+	fprintf(f,"%s\n%d\n%s\n%s\n", s, p, n, c);
 	// Output to the user
-	printf("Configuration saved on: %s\n",filename);
+	printf("Configuration saved on: %s\n", filename);
 	
 	fclose(f);
 	return 0;
