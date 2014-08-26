@@ -55,7 +55,7 @@ struct IRC{
 int load_config(char *filename, char* s, int *p, char* n, char* c);
 int save_config(char *filename, char *s, int p, char *n, char *c);
 void c_error(FILE *out, const char *fmt, ...);
-void init_bot(struct IRC *bot, char *s, int p, char *n, char *c);
+void bot_init(struct IRC *bot, char *s, int p, char *n, char *c);
 
 // Global Struct variable (I know isn't a good idea)
 struct IRC bot;
@@ -65,12 +65,12 @@ int main(int argc, char *argv[]){
 	
 	// 5 argument - start the bot
 	if(argc == 5){
-		init_bot(&bot, argv[1], atoi(argv[2]), argv[3], argv[4]);
+		bot_init(&bot, argv[1], atoi(argv[2]), argv[3], argv[4]);
 	}
 	// 6 argument - save configuration and start the bot
 	else if(argc == 6){
 		save_config(argv[5], argv[1], atoi(argv[2]), argv[3], argv[4]);
-		init_bot(&bot, argv[1], atoi(argv[2]), argv[3], argv[4]);
+		bot_init(&bot, argv[1], atoi(argv[2]), argv[3], argv[4]);
 	}
 	// 2 argument - load configuration and start the bot
 	else if(argc == 2){
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]){
 		char chan[20];
 		int result = load_config(argv[argc-1], server, &port, nick, chan);
 		if(result == 0){
-			init_bot(&bot, server, port, nick, chan);
+			bot_init(&bot, server, port, nick, chan);
 		}
 		else {
 			return 1;
@@ -153,7 +153,7 @@ int save_config(char *filename, char *s, int p, char *n, char *c){
 }
 
 // Initialize the bot in the struct
-void init_bot(struct IRC *bot, char *s, int p, char *n, char *c)
+void bot_init(struct IRC *bot, char *s, int p, char *n, char *c)
 {
         strcpy(bot->server, s);
         bot->port = p;
