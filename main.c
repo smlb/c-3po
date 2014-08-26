@@ -279,14 +279,13 @@ int bot_parse_action(char *user, char *command, char *where, char *target, char 
 	cmd = strtok(cmd, " ");
 	arg[i] = strtok(NULL, " ");
 	if(arg[i] != NULL){
-		while(arg[i] != NULL){
+		for(i=0;i<3;i++){
 			printf("------ '%s' %d\n",arg[i],i);
-			i++;
-			if(i>3){
-				// dijkstra hate me
+			arg[i] = strtok(NULL, " ");
+			if(arg[i] == NULL){
+				// “Dijkstra probably hates me.”
 				break;
 			}
-			arg[i] = strtok(NULL, " ");
 		}
 	}		
 	if(cmd == NULL)
