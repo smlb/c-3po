@@ -19,7 +19,7 @@ OBJ = main.o
 # Header file
 DEPS = 
 # Folder with object file
-CFLAGS=-Wall -I.
+CFLAGS=-Wall -std=gnu99 -I.
 
 # Compile Header and C-Source into Object file
 ## $@ is the parameter to the left of :
