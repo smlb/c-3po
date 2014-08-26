@@ -46,7 +46,7 @@ void bot_init(struct IRC *bot, char *s, char *p, char *n, char *c);
 int bot_connect(struct IRC *bot);
 void bot_pong(struct IRC *bot, char *buff);
 void bot_raw(char *fmt, ...);
-int bot_parse_action(char *user, char *command, char *where, char *message, char *target);
+int bot_parse_action(char *user, char *command, char *where, char *target, char *message);
 
 // Global Struct variable (I know isn't a good idea)
 struct IRC bot;
@@ -270,26 +270,36 @@ int bot_parse_action(char *user, char *command, char *where, char *target, char 
 		return 1;
 
 	char *cmd;
-	char *arg;
+	char *arg[6];
+	int i=0;
+	
 	// Gets command
-	cmd = strtok(&msg[1], " ");
-	//strlen(cmd);
-	arg = strtok(NULL, " ");
-	if(arg != NULL){
-		while(*arg == ' '){
-			arg++;
+	cmd = strtok(msg, "!");	
+	cmd = strtok(cmd, "\n\r");
+	cmd = strtok(cmd, " ");
+	arg[i] = strtok(NULL, " ");
+	if(arg[i] != NULL){
+		while(arg[i] != NULL){
+			printf("------ '%s' %d\n",arg[i],i);
+			i++;
+			if(i>3){
+				// dijkstra hate me
+				break;
+			}
+			arg[i] = strtok(NULL, " ");
 		}
 	}		
-	//debug purpose only
-	printf("------ '%s' ------\n",cmd);
 	if(cmd == NULL)
 		return 1;
-			
+		
 	if(strcmp(cmd, "ping") == 0){
 		bot_raw("PRIVMSG %s :pong\r\n", bot.chan);
 	}
 	else if(strcmp(cmd, "PING") == 0){
 		bot_raw("PRIVMSG %s :PONG\r\n", bot.chan);
+	}
+	else if(strcmp(cmd, "count") == 0){
+		bot_raw("PRIVMSG %s :%s\r\n", bot.chan, i);
 	}
 	
 	return 0;
