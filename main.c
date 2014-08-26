@@ -30,11 +30,11 @@
 
 // Simple struct with bot configuration ;)
 struct IRC{
-        char server[100];
-        char port[5];
-        char nick[15];
-        char chan[20];
-        struct addrinfo hints, *res;
+	char server[100];
+	char port[5];
+	char nick[15];
+	char chan[20];
+	struct addrinfo hints, *res;
 }; 
 
 // Prototypes
@@ -46,6 +46,7 @@ void bot_init(struct IRC *bot, char *s, char *p, char *n, char *c);
 int bot_connect(struct IRC *bot);
 void bot_pong(struct IRC *bot, char *buff);
 void bot_raw(char *fmt, ...);
+int bot_parse_action(char *user, char *command, char *where, char *message, char *target);
 
 // Global Struct variable (I know isn't a good idea)
 struct IRC bot;
@@ -251,6 +252,7 @@ int bot_connect(struct IRC *bot){
 						if ((sep = strchr(user, '!')) != NULL) user[sep - user] = '\0';
 						if (where[0] == '#' || where[0] == '&' || where[0] == '+' || where[0] == '!') target = where; else target = user;
 						printf("[from: %s] [reply-with: %s] [where: %s] [reply-to: %s] %s", user, command, where, target, message);
+						bot_parse_action(user, command, where, target, message);
 					}
 				}
 			}
@@ -259,3 +261,36 @@ int bot_connect(struct IRC *bot){
 	return 0;
 }
 
+int bot_parse_action(char *user, char *command, char *where, char *target, char *msg){
+// Private message example
+//	[from: Th3Zer0] [reply-with: PRIVMSG] [where: C-3PO_bot] [reply-to: Th3Zer0] ciao
+// Channel message example
+//	[from: Th3Zer0] [reply-with: PRIVMSG] [where: ##freedomfighter] [reply-to: ##freedomfighter] ciao
+	if(*msg != '!')
+		return 1;
+
+	char *cmd;
+	char *arg;
+	// Gets command
+	cmd = strtok(&msg[1], " ");
+	//strlen(cmd);
+	arg = strtok(NULL, " ");
+	if(arg != NULL){
+		while(*arg == ' '){
+			arg++;
+		}
+	}		
+	//debug purpose only
+	printf("------ '%s' ------\n",cmd);
+	if(cmd == NULL)
+		return 1;
+			
+	if(strcmp(cmd, "ping") == 0){
+		bot_raw("PRIVMSG %s :pong\r\n", bot.chan);
+	}
+	else if(strcmp(cmd, "PING") == 0){
+		bot_raw("PRIVMSG %s :PONG\r\n", bot.chan);
+	}
+	
+	return 0;
+}
