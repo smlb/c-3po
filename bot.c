@@ -124,10 +124,15 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 //	[from: Th3Zer0] [reply-with: PRIVMSG] [where: C-3PO_bot] [reply-to: Th3Zer0] ciao
 // Channel message example
 //	[from: Th3Zer0] [reply-with: PRIVMSG] [where: ##freedomfighter] [reply-to: ##freedomfighter] ciao
-	if(strstr(msg,"<3")){
+	if(strstr(msg,"<3") || strstr(msg,"love")){
 		bot_raw(bot,"PRIVMSG %s :%s: so much LOVE <3 <3\r\n", bot->chan, user);
+		bot_action(bot,bot->chan,"feeling lovely");
 	}
-		
+	if(strstr(msg,"fuck")){
+		bot_raw(bot,"PRIVMSG %s :%s: don't say bad words!\r\n", bot->chan, user);
+		bot_action(bot,bot->chan,"is angry");
+	}
+	
 	if(*msg != '!')
 		return 1;
 
