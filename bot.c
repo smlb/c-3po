@@ -3,8 +3,11 @@
 #include <unistd.h>
 #include <string.h>
 #include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <stdarg.h>
 #include <math.h> 
+#include <time.h>
 #include "bot.h"
 
 // Magic function to throw error to stderr or other file
@@ -154,7 +157,6 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 	}
 	// Count the argument
 	while(argv[i] != NULL){
-		printf("%d ",i);
 		i++;
 	}
 	// the command is in the first argument
@@ -198,6 +200,26 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 	}
 	else if(strcasecmp(argv[0], "whoami") == 0) {
 		bot_raw(bot,"PRIVMSG %s :I'm a bot, developed using Coffee and Beer. You are %s, I think you know...\r\n", bot->chan, user);
+	}
+	else if((strcasecmp(argv[0], "attack") == 0) && argv[1] != NULL) {
+		srand(time(NULL));
+		int critical;
+		critical = (rand()%10)/8;
+		if(critical){
+			bot_raw(bot,"PRIVMSG %s :\001ACTION attacks %s! %d damage (it's super effective).\001\r\n", bot->chan, argv[1], rand()%20 + 21);
+		} else {
+			bot_raw(bot,"PRIVMSG %s :\001ACTION attacks %s! %d damage.\001\r\n", bot->chan, argv[1], rand()%20 + 1);
+		}
+	}
+	else if((strcasecmp(argv[0], "lookup") == 0) && argv[1] != NULL) {
+		struct hostent* hp;
+		struct in_addr **addr_list;
+		if((hp = gethostbyname(argv[1])) == NULL){
+			bot_raw(bot,"PRIVMSG %s :%s: The host %s is unreachable.\r\n", bot->chan, user, argv[1]);
+		} else {
+			addr_list = (struct in_addr **)hp->h_addr_list;
+			bot_raw(bot,"PRIVMSG %s :%s: IP: %s\r\n", bot->chan, user, inet_ntoa(*addr_list[0]));
+		}
 	}
 	
 	return 0;
