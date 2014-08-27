@@ -1,5 +1,10 @@
-#ifndef __IRC_H
-#define __IRC_H
+#ifndef __IRCBOT_H
+#define __IRCBOT_H
+
+// Semantic Versioning
+#define version_major 0
+#define version_minor 0
+#define version_patch 9
 
 // Simple struct with bot configuration ;)
 struct IRC{
@@ -29,6 +34,7 @@ void bot_away(struct IRC *bot);
 void bot_topic(struct IRC *bot, const char *channel, const char *data);
 void bot_action(struct IRC *bot, const char *channel, const char *data);
 void bot_msg(struct IRC *bot, const char *channel, const char *data);
+void bot_help(struct IRC *bot, char* cmd);
 
 // built-in error reporting
 void c_error(FILE *out, const char *fmt, ...);

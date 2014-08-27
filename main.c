@@ -33,12 +33,13 @@
 int load_config(char *filename, char* s, char *p, char* n, char* c);
 int save_config(char *filename, char *s, char *p, char *n, char *c);
 
-
 // Global Struct variable (I know isn't a good idea)
 struct IRC bot;
 
 int main(int argc, char *argv[]){
-	printf("C-3PO - 0.0.8\n  This software is under the GPL License\n");
+	char version[10];
+	sprintf(version,"%d.%d.%d", version_major, version_minor, version_patch);
+	printf("C-3PO - %s\n  This software is under the GPL License\n", version);
 	
 	// 5 argument - start the bot
 	if(argc == 5){

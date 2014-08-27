@@ -169,10 +169,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 		bot_raw(bot,"PRIVMSG %s :pong\r\n", bot->chan);
 	}
 	else if(strcasecmp(argv[0], "help") == 0){
-		char h1[] = "!help !ping !quit !google !ddg !sqrt !archwiki !whoami !attack !lookup !away <3";
-		bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
-		char h2[] = "Type !help <cmd> for information about that command.";
-		bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h2);
+		bot_help(bot,argv[1]);
 	}
 	else if(strcasecmp(argv[0], "count") == 0){
 		bot_raw(bot,"PRIVMSG %s :%d\r\n", bot->chan, i);
@@ -285,4 +282,73 @@ void bot_action(struct IRC *bot, const char *channel, const char *data){
 // bot_msg: For sending a channel message or a query
 void bot_msg(struct IRC *bot, const char *channel, const char *data){
 	bot_raw(bot,"PRIVMSG %s :%s\r\n", channel, data);
+}
+void bot_help(struct IRC *bot, char* cmd){
+	if(cmd==NULL){
+		char h1[] = "!help !ping !quit !google !ddg !sqrt !archwiki !whoami !attack !lookup !away !life !rms !random !privacy !segfault <3";
+		bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		char h2[] = "Type !help <cmd> for information about that command.";
+		bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h2);
+	} else {
+		if(strcasecmp(cmd, "ping") == 0){
+			char h1[] = "Perform a ping to the bot. Reply with pong";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "quit") == 0){
+			char h1[] = "Quit the bot";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "google") == 0){
+			char h1[] = "Print the link of a google search. Take <keyword> as argument";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "ddg") == 0){
+			char h1[] = "Print the link of a google search. Take <keyword> as argument";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "sqrt") == 0){
+			char h1[] = "Performthe square root of a number. Take <number> as argument";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "archwiki") == 0){
+			char h1[] = "Print the link of an archwiki page. Take <keyword> as argument";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "whoami") == 0){
+			char h1[] = "Whoami?";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "attak") == 0){
+			char h1[] = "Let's kick some asses";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "lookup") == 0){
+			char h1[] = "Perform a DNS Lookup. Take <hostname> as argument";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "away") == 0){
+			char h1[] = "Set the bot Away";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "life") == 0){
+			char h1[] = "You ask the meaning of life?";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "rms") == 0){
+			char h1[] = "Who don't know RMS?";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "random") == 0){
+			char h1[] = "Random?";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "privacy") == 0){
+			char h1[] = "Some privacy sites";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+		else if(strcasecmp(cmd, "segfault") == 0){
+			char h1[] = "Pfff. I'm not a liar.";
+			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
+	}
 }
