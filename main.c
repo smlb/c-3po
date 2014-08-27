@@ -328,6 +328,7 @@ int bot_parse_action(char *user, char *command, char *where, char *target, char 
             bot_raw("PRIVMSG %s :%s: https://wiki.archlinux.org/index.php/%s\r\n", bot.chan, argv[2], argv[1]);
         } else { 
             bot_raw("PRIVMSG %s :%s: https://wiki.archlinux.org/index.php/%s\r\n", bot.chan, user, argv[1]);
+        }
     }
 	
 	return 0;
