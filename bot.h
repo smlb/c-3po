@@ -11,6 +11,8 @@ struct IRC{
 	struct addrinfo hints, *res;
 	int conn;
 	char sbuf[512];
+	// !attack purpose =)
+	int life; 
 }; 
 
 // All bot-related function should start with 'bot_'
@@ -25,6 +27,7 @@ void bot_join(struct IRC *bot, const char *chan);
 void bot_part(struct IRC *bot, const char *chan);
 void bot_nick(struct IRC *bot, const char *data);
 void bot_quit(struct IRC *bot);
+void bot_away(struct IRC *bot);
 void bot_topic(struct IRC *bot, const char *channel, const char *data);
 void bot_action(struct IRC *bot, const char *channel, const char *data);
 void bot_msg(struct IRC *bot, const char *channel, const char *data);

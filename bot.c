@@ -112,7 +112,7 @@ int bot_connect(struct IRC *bot){
 						if (where == NULL || message == NULL) continue;
 						if ((sep = strchr(user, '!')) != NULL) user[sep - user] = '\0';
 						if (where[0] == '#' || where[0] == '&' || where[0] == '+' || where[0] == '!') target = where; else target = user;
-						printf("[from: %s] [reply-with: %s] [where: %s] [reply-to: %s] %s", user, command, where, target, message);
+						//printf("[from: %s] [reply-with: %s] [where: %s] [reply-to: %s] %s", user, command, where, target, message);
 						bot_parse_action(bot, user, command, where, target, message);
 					}
 				}
@@ -127,6 +127,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 //	[from: Th3Zer0] [reply-with: PRIVMSG] [where: C-3PO_bot] [reply-to: Th3Zer0] ciao
 // Channel message example
 //	[from: Th3Zer0] [reply-with: PRIVMSG] [where: ##freedomfighter] [reply-to: ##freedomfighter] ciao
+
 	if(strstr(msg,"<3") || strstr(msg,"love")){
 		bot_raw(bot,"PRIVMSG %s :%s: so much LOVE <3 <3\r\n", bot->chan, user);
 		bot_action(bot,bot->chan,"feeling lovely");
@@ -167,11 +168,20 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 	if(strcasecmp(argv[0], "ping") == 0){
 		bot_raw(bot,"PRIVMSG %s :pong\r\n", bot->chan);
 	}
+	else if(strcasecmp(argv[0], "help") == 0){
+		char h1[] = "!help !ping !quit !google !ddg !sqrt !archwiki !whoami !attack !lookup !away <3";
+		bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		char h2[] = "Type !help <cmd> for information about that command.";
+		bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h2);
+	}
 	else if(strcasecmp(argv[0], "count") == 0){
 		bot_raw(bot,"PRIVMSG %s :%d\r\n", bot->chan, i);
 	}
 	else if(strcasecmp(argv[0], "quit") == 0){
 		bot_quit(bot);
+	}
+	else if(strcasecmp(argv[0], "away") == 0){
+		bot_away(bot);
 	}
 	else if((strcasecmp(argv[0], "google") == 0) && argv[1] != NULL){
 		if(argv[2] != NULL){
@@ -252,6 +262,10 @@ void bot_part(struct IRC *bot, const char *chan){
 // bot_nick: For changing your nick
 void bot_nick(struct IRC *bot, const char *data){
 	bot_raw(bot,"NICK %s\r\n", data);
+}
+// bot_away: For quitting IRC
+void bot_away(struct IRC *bot){
+	bot_raw(bot,"AWAY :C-3PO Bot\r\n");
 }
 // bot_quit: For quitting IRC
 void bot_quit(struct IRC *bot){
