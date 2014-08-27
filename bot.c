@@ -231,7 +231,13 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
     srand(time(NULL));
     bot_raw(bot, "PRIVMSG %s :%s: here you are a $RANDOM number -> %d\r\n", bot->chan, user, rand());
   }
-	
+  else if(strcasecmp(argv[0], "privacy") == 0 ) {
+    if(argv[1] != NULL) {
+      bot_raw(bot, "PRIVMSG %s :%s: https://eff.org | https://prism-break.org | https://torproject.org | http://stallman.org\r\n", bot->chan, argv[1]);
+    } else {
+      bot_raw(bot, "PRIVMSG %s :%s: https://eff.org | https://prism-break.org | https://torproject.org | http://stallman.org\r\n", bot->chan, user);
+    }
+  }
 	return 0;
 }
 
