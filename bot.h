@@ -1,3 +1,20 @@
+/*
+ * =====================================================================================
+ *
+ *    Description:  
+ *
+ *        Version:  0.1.0
+ *        Created:  08/26/2014
+ *       Revision:  N/A
+ *       Compiler:  gcc
+ *
+ *        Authors:  b4dtr1p, smlb, Th3Zer0
+ *   Organization:  Freedom Fighters
+ *
+ * =====================================================================================
+ */
+
+
 #ifndef __IRCBOT_H
 #define __IRCBOT_H
 
