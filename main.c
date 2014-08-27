@@ -274,9 +274,10 @@ int bot_parse_action(char *user, char *command, char *where, char *target, char 
 	int i=0;
 	char **ap, *argv[10];
 	
-	// Gets command
+	// Clean the string
 	cmd = strtok(msg, "!");	
 	cmd = strtok(cmd, "\n\r");
+	// Split the argument
 	for(ap = argv; (*ap = strsep(&cmd, " \t")) != NULL;){
 		if(**ap != '\0'){
 			if(++ap >= &argv[10]){
@@ -284,16 +285,21 @@ int bot_parse_action(char *user, char *command, char *where, char *target, char 
 			}
 		}
 	}
-	printf("%s",argv[0]);
-	
+	// Count the argument
+	while(argv[i] != NULL){
+		printf("%d ",i);
+		i++;
+	}
+	// the command is in the first argument
 	if(argv[0] == NULL)
 		return 1;
-		
+	
+	// Fuck That
 	if(strcasecmp(argv[0], "ping") == 0){
 		bot_raw("PRIVMSG %s :pong\r\n", bot.chan);
 	}
 	else if(strcasecmp(argv[0], "count") == 0){
-		bot_raw("PRIVMSG %s :%s\r\n", bot.chan, i);
+		bot_raw("PRIVMSG %s :%d\r\n", bot.chan, i);
 	}
 	else if(strcasecmp(argv[0], "quit") == 0){
 		bot_raw("QUIT :C-3PO Bot\r\n", bot.chan, i);
