@@ -322,6 +322,13 @@ int bot_parse_action(char *user, char *command, char *where, char *target, char 
         double x = atof(argv[1]);
         bot_raw("PRIVMSG %s :%s: %g\r\n", bot.chan, user, sqrt(x));
     }
+    
+    else if((strcasecmp(argv[0], "archwiki") == 0) && argv[1] != NULL) {
+        if(argv[2] != NULL) {
+            bot_raw("PRIVMSG %s :%s: https://wiki.archlinux.org/index.php/%s\r\n", bot.chan, argv[2], argv[1]);
+        } else { 
+            bot_raw("PRIVMSG %s :%s: https://wiki.archlinux.org/index.php/%s\r\n", bot.chan, user, argv[1]);
+    }
 	
 	return 0;
 }
