@@ -15,11 +15,12 @@ CC = gcc
 # How can i remove file?
 RM = 'rm'
 # Object file
-OBJ = main.o
+OBJ = main.o bot.o
+BINOBJ = $(OBJ:%.o=bin/%.o)
 # Header file
-DEPS = 
+DEPS = bot.h
 # Folder with object file
-CFLAGS=-Wall -std=gnu99 -I.
+CFLAGS=-Wall -lm -std=gnu99 -I.
 
 # Compile Header and C-Source into Object file
 ## $@ is the parameter to the left of :
@@ -30,7 +31,7 @@ CFLAGS=-Wall -std=gnu99 -I.
 # Compile the executable
 ## $^ is the parameter to the right of :
 c-3po: $(OBJ)
-	$(CC) bin/$^ -o bin/c-3po
+	$(CC) $(BINOBJ) -o bin/c-3po $(CFLAGS)
 
 all: c-3po
 
