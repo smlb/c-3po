@@ -270,35 +270,33 @@ int bot_parse_action(char *user, char *command, char *where, char *target, char 
 		return 1;
 
 	char *cmd;
-	char *arg[6];
+	//char *arg[6];
 	int i=0;
+	char **ap, *argv[10];
 	
 	// Gets command
 	cmd = strtok(msg, "!");	
 	cmd = strtok(cmd, "\n\r");
-	cmd = strtok(cmd, " ");
-	arg[i] = strtok(NULL, " ");
-	if(arg[i] != NULL){
-		for(i=0;i<3;i++){
-			printf("------ '%s' %d\n",arg[i],i);
-			arg[i] = strtok(NULL, " ");
-			if(arg[i] == NULL){
-				// “Dijkstra probably hates me.”
+	for(ap = argv; (*ap = strsep(&cmd, " \t")) != NULL;){
+		if(**ap != '\0'){
+			if(++ap >= &argv[10]){
 				break;
 			}
 		}
-	}		
-	if(cmd == NULL)
+	}
+	printf("%s",argv[0]);
+	
+	if(argv[0] == NULL)
 		return 1;
 		
-	if(strcmp(cmd, "ping") == 0){
+	if(strcasecmp(argv[0], "ping") == 0){
 		bot_raw("PRIVMSG %s :pong\r\n", bot.chan);
 	}
-	else if(strcmp(cmd, "PING") == 0){
-		bot_raw("PRIVMSG %s :PONG\r\n", bot.chan);
-	}
-	else if(strcmp(cmd, "count") == 0){
+	else if(strcasecmp(argv[0], "count") == 0){
 		bot_raw("PRIVMSG %s :%s\r\n", bot.chan, i);
+	}
+	else if(strcasecmp(argv[0], "quit") == 0){
+		bot_raw("QUIT :C-3PO Bot\r\n", bot.chan, i);
 	}
 	
 	return 0;
