@@ -248,6 +248,9 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
       bot_raw(bot, "PRIVMSG %s :%s: https://eff.org | https://prism-break.org | https://torproject.org | http://stallman.org\r\n", bot->chan, user);
     }
   }
+  else if(strcasecmp(argv[0], "segfault") == 0) {
+    bot_raw(bot, "PRIVMSG %s :C-3PO never segfault...and never lie.\r\n", bot->chan);
+  }
 	return 0;
 }
 

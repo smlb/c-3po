@@ -38,7 +38,7 @@ int save_config(char *filename, char *s, char *p, char *n, char *c);
 struct IRC bot;
 
 int main(int argc, char *argv[]){
-	printf("C-3PO - 0.0.1\n  This software is under the GPL License\n");
+	printf("C-3PO - 0.0.8\n  This software is under the GPL License\n");
 	
 	// 5 argument - start the bot
 	if(argc == 5){
