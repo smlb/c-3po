@@ -304,6 +304,20 @@ int bot_parse_action(char *user, char *command, char *where, char *target, char 
 	else if(strcasecmp(argv[0], "quit") == 0){
 		bot_raw("QUIT :C-3PO Bot\r\n", bot.chan, i);
 	}
+	else if((strcasecmp(argv[0], "google") == 0) && argv[1] != NULL){
+		if(argv[2] != NULL){
+			bot_raw("PRIVMSG %s :%s: http://lmgtfy.com/?q=%s\r\n", bot.chan, argv[2], argv[1]);
+		} else {
+			bot_raw("PRIVMSG %s :%s: http://lmgtfy.com/?q=%s\r\n", bot.chan, user, argv[1]);
+		}	
+	}
+	else if((strcasecmp(argv[0], "ddg") == 0) && argv[1] != NULL){
+		if(argv[2] != NULL){
+			bot_raw("PRIVMSG %s :%s: http://duckduckgo.com/?q=%s\r\n", bot.chan, argv[2], argv[1]);
+		} else {
+			bot_raw("PRIVMSG %s :%s: http://duckduckgo.com/?q=%s\r\n", bot.chan, user, argv[1]);	
+		}
+	}
 	
 	return 0;
 }
