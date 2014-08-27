@@ -221,12 +221,16 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 			bot_raw(bot,"PRIVMSG %s :%s: IP: %s\r\n", bot->chan, user, inet_ntoa(*addr_list[0]));
 		}
   }
-    else if(strcasecmp(argv[0], "life") == 0) {
-      bot_raw(bot, "PRIVMSG %s :%s: 42\r\n", bot->chan, user);
-    }
-    else if(strcasecmp(argv[0], "rms") == 0) {
-      bot_raw(bot, "PRIVMSG %s :Stallman approves.\r\n", bot->chan);
-    }
+  else if(strcasecmp(argv[0], "life") == 0) {
+    bot_raw(bot, "PRIVMSG %s :%s: 42\r\n", bot->chan, user);
+  }
+  else if(strcasecmp(argv[0], "rms") == 0) {
+    bot_raw(bot, "PRIVMSG %s :Stallman approves.\r\n", bot->chan);
+  }
+  else if(strcasecmp(argv[0], "random") == 0) {
+    srand(time(NULL));
+    bot_raw(bot, "PRIVMSG %s :%s: here you are a $RANDOM number -> %d\r\n", bot->chan, user, rand());
+  }
 	
 	return 0;
 }
