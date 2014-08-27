@@ -318,6 +318,10 @@ int bot_parse_action(char *user, char *command, char *where, char *target, char 
 			bot_raw("PRIVMSG %s :%s: http://duckduckgo.com/?q=%s\r\n", bot.chan, user, argv[1]);	
 		}
 	}
+    else if(strcasecmp(argv[0], "sqrt") == 0) {
+        double x = atof(argv[1]);
+        bot_raw("PRIVMSG %s :%s: %g\r\n", bot.chan, user, sqrt(x));
+    }
 	
 	return 0;
 }
