@@ -164,7 +164,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 		bot_raw(bot,"PRIVMSG %s :%d\r\n", bot->chan, i);
 	}
 	else if(strcasecmp(argv[0], "quit") == 0){
-		bot_raw(bot,"QUIT :C-3PO Bot\r\n", bot->chan, i);
+		bot_quit(bot);
 	}
 	else if((strcasecmp(argv[0], "google") == 0) && argv[1] != NULL){
 		if(argv[2] != NULL){
