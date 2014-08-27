@@ -330,6 +330,10 @@ int bot_parse_action(char *user, char *command, char *where, char *target, char 
             bot_raw("PRIVMSG %s :%s: https://wiki.archlinux.org/index.php/%s\r\n", bot.chan, user, argv[1]);
         }
     }
+
+    else if(strcasecmp(argv[0], "whoami") == 0) {
+        bot_raw("PRIVMSG %s :I'm a bot, developed using Coffee and Beer. You are %s, I think you know...\r\n", bot.chan, user);
+    }
 	
 	return 0;
 }
