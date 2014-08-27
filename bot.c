@@ -7,6 +7,16 @@
 #include <math.h> 
 #include "bot.h"
 
+// Magic function to throw error to stderr or other file
+void c_error(FILE *out, const char *fmt, ...){
+	// With a va_list we can print string like printf argument
+	// es -  "%s", string -
+	va_list ap;
+	va_start(ap, fmt);
+	vfprintf(out, fmt, ap);
+	va_end(ap);
+}
+
 // Initialize the bot in the struct
 void bot_init(struct IRC *bot, char *s, char *p, char *n, char *c){
 	strcpy(bot->server, s);
@@ -114,6 +124,10 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 //	[from: Th3Zer0] [reply-with: PRIVMSG] [where: C-3PO_bot] [reply-to: Th3Zer0] ciao
 // Channel message example
 //	[from: Th3Zer0] [reply-with: PRIVMSG] [where: ##freedomfighter] [reply-to: ##freedomfighter] ciao
+	if(strstr(msg,"<3")){
+		bot_raw(bot,"PRIVMSG %s :%s: so much LOVE <3 <3\r\n", bot->chan, user);
+	}
+		
 	if(*msg != '!')
 		return 1;
 
@@ -184,12 +198,31 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 	return 0;
 }
 
-// Magic function to throw error to stderr or other file
-void c_error(FILE *out, const char *fmt, ...){
-	// With a va_list we can print string like printf argument
-	// es -  "%s", string -
-	va_list ap;
-	va_start(ap, fmt);
-	vfprintf(out, fmt, ap);
-	va_end(ap);
+// bot_join: For joining a channel
+void bot_join(struct IRC *bot, const char *chan){
+	bot_raw(bot,"JOIN %s\r\n", chan);
+}
+// bot_part: For leaving a channel
+void bot_part(struct IRC *bot, const char *chan){
+	bot_raw(bot,"PART %s\r\n", chan);
+}
+// bot_nick: For changing your nick
+void bot_nick(struct IRC *bot, const char *data){
+	bot_raw(bot,"NICK %s\r\n", data);
+}
+// bot_quit: For quitting IRC
+void bot_quit(struct IRC *bot){
+	bot_raw(bot,"QUIT :C-3PO Bot\r\n");
+}
+// bot_topic: For setting or removing a topic
+void bot_topic(struct IRC *bot, const char *channel, const char *data){
+	bot_raw(bot,"TOPIC %s :%s\r\n", channel, data);
+}
+// bot_action: For executing an action (.e.g /me is hungry)
+void bot_action(struct IRC *bot, const char *channel, const char *data){
+	bot_raw(bot,"PRIVMSG %s :\001ACTION %s\001\r\n", channel, data);
+}
+// bot_msg: For sending a channel message or a query
+void bot_msg(struct IRC *bot, const char *channel, const char *data){
+	bot_raw(bot,"PRIVMSG %s :%s\r\n", channel, data);
 }
