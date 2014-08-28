@@ -21,13 +21,13 @@ BINOBJ = $(OBJ:%.o=bin/%.o)
 DEPS = bot.h
 # Folder with object file
 CFLAGS=-Wall -lm -std=gnu99 -I.
-ODIR = bin
+OBJDIR = bin
 
 # Compile Header and C-Source into Object file
 ## $@ is the parameter to the left of :
 ## $< is the first parameter to the right of :
 %.o: %.c $(DEPS)
-	@mkdir -p $(ODIR)
+	@mkdir -p $(OBJDIR)
 	$(CC) -c $< -o bin/$@ $(CFLAGS)
 
 # Compile the executable
