@@ -129,7 +129,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 //	[from: Th3Zer0] [reply-with: PRIVMSG] [where: ##freedomfighter] [reply-to: ##freedomfighter] ciao
 
 	if(strstr(msg,"<3") || strstr(msg,"love")){
-		bot_raw(bot,"PRIVMSG %s :%s: so much LOVE <3 <3\r\n", bot->chan, user);
+		bot_raw(bot,"PRIVMSG %s :%s: so much LOVE\r\n", bot->chan, user);
 		sleep(2);
     bot_action(bot,bot->chan,"feeling lovely");
 	}
@@ -141,7 +141,12 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 	if(strstr(msg,"C-3PO_bot: how are you?")) {
     bot_raw(bot, "PRIVMSG %s :%s: not bad and you?\r\n", bot->chan, user);
   }
-
+	if(strcasecmp(user,"NickServ")==0){
+		if(strstr(msg,"Last seen")){
+			bot_raw(bot, "PRIVMSG %s :%s\r\n", bot->chan, msg);
+		}
+	}
+	
 	if(*msg != '!')
 		return 1;
 
@@ -267,6 +272,11 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
   }
   else if(strcasecmp(argv[0], "segfault") == 0) {
     bot_raw(bot, "PRIVMSG %s :C-3PO never segfault...and never lie.\r\n", bot->chan);
+  }
+  else if(strcasecmp(argv[0], "lastseen") == 0) {
+		if(argv[1] != NULL) {
+			bot_raw(bot, "PRIVMSG NickServ :info %s\r\n",argv[1]);
+		}
   }
 	return 0;
 }
