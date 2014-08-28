@@ -238,6 +238,9 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
     srand(time(NULL));
     bot_raw(bot, "PRIVMSG %s :%s: here you are a $RANDOM number -> %d\r\n", bot->chan, user, rand());
   }
+  else if(strcasecmp(argv[0], "future") == 0 ) {
+    bot_raw(bot, "PRIVMSG %s :Innovation is not what innovators do, but what customers adopt...this is freedomfight!\r\n", bot->chan);
+  } 
   else if(strcasecmp(argv[0], "privacy") == 0 ) {
     if(argv[1] != NULL) {
       bot_raw(bot, "PRIVMSG %s :%s: https://eff.org | https://prism-break.org | https://torproject.org | http://stallman.org\r\n", bot->chan, argv[1]);
@@ -285,7 +288,7 @@ void bot_msg(struct IRC *bot, const char *channel, const char *data){
 }
 void bot_help(struct IRC *bot, char* cmd){
 	if(cmd==NULL){
-		char h1[] = "!help !ping !quit !google !ddg !sqrt !archwiki !whoami !attack !lookup !away !life !rms !random !privacy !segfault <3";
+		char h1[] = "!help !ping !quit !google !ddg !sqrt !archwiki !whoami !attack !lookup !away !life !rms !random !privacy !segfault !future <3";
 		bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
 		char h2[] = "Type !help <cmd> for information about that command.";
 		bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h2);
@@ -322,6 +325,10 @@ void bot_help(struct IRC *bot, char* cmd){
 			char h1[] = "Let's kick some asses";
 			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
 		}
+        else if(strcasecmp(cmd, "future") == 0){
+            char h1[] = "the future we would like to.";
+            bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+        }
 		else if(strcasecmp(cmd, "lookup") == 0){
 			char h1[] = "Perform a DNS Lookup. Take <hostname> as argument";
 			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
