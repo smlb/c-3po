@@ -138,7 +138,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 		sleep(2);
     bot_action(bot,bot->chan,"is angry");
 	}
-	if(strstr(msg,"C-3PO_test: how are you?")) {
+	if(strstr(msg,"C-3PO_bot: how are you?")) {
     bot_raw(bot, "PRIVMSG %s :%s: not bad and you?\r\n", bot->chan, user);
   }
 
