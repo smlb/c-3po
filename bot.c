@@ -189,9 +189,9 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 	}
 	else if((strcasecmp(argv[0], "ddg") == 0) && argv[1] != NULL){
 		if(argv[2] != NULL){
-			bot_raw(bot,"PRIVMSG %s :%s: http://duckduckgo.com/?q=%s\r\n", bot->chan, argv[2], argv[1]);
+			bot_raw(bot,"PRIVMSG %s :%s: https://lmddgtfy.net/?q=%s\r\n", bot->chan, argv[2], argv[1]);
 		} else {
-			bot_raw(bot,"PRIVMSG %s :%s: http://duckduckgo.com/?q=%s\r\n", bot->chan, user, argv[1]);	
+			bot_raw(bot,"PRIVMSG %s :%s: https://lmddgtfy.net/?q=%s\r\n", bot->chan, user, argv[1]);	
 		}
 	}
 	else if(strcasecmp(argv[0], "sqrt") == 0) {
