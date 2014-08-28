@@ -27,7 +27,7 @@ OBJDIR = bin
 ## $@ is the parameter to the left of :
 ## $< is the first parameter to the right of :
 %.o: %.c $(DEPS)
-	@mkdir -p $(OBJDIR)
+	-mkdir -p $(OBJDIR)
 	$(CC) -c $< -o bin/$@ $(CFLAGS)
 
 # Compile the executable
