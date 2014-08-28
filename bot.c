@@ -203,7 +203,16 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 		double x = atof(argv[1]);
 		bot_raw(bot,"PRIVMSG %s :%s: %g\r\n", bot->chan, user, sqrt(x));
 	}
-	else if((strcasecmp(argv[0], "archwiki") == 0) && argv[1] != NULL) {
+  else if(strcasecmp(argv[0], "sum") == 0) { 
+    if(argv[2] != NULL) {
+      double i = atof(argv[1]);
+      double j = atof(argv[2]);
+      bot_raw(bot, "PRIVMSG %s :%s: %g\r\n", bot->chan, user, i+j);
+    } else {
+      bot_raw(bot, "PRIVMSG %s :%s: you need to provide at least two arguments!\r\n", bot->chan, user);
+    } 
+  }
+  else if((strcasecmp(argv[0], "archwiki") == 0) && argv[1] != NULL) {
 		if(argv[2] != NULL) {
 			bot_raw(bot,"PRIVMSG %s :%s: https://wiki.archlinux.org/index.php/%s\r\n", bot->chan, argv[2], argv[1]);
 		} else { 
