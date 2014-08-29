@@ -3,7 +3,7 @@
  *
  *    Description:  
  *
- *        Version:  0.1.0
+ *        Version:  0.1.3
  *        Created:  08/26/2014
  *       Revision:  N/A
  *       Compiler:  gcc
@@ -21,7 +21,9 @@
 // Semantic Versioning
 #define version_major 0
 #define version_minor 1
-#define version_patch 0
+#define version_patch 3
+// 0 stand for false
+#define DEBUG 0
 
 // Simple struct with bot configuration ;)
 struct IRC{
@@ -41,6 +43,7 @@ int bot_connect(struct IRC *bot);
 void bot_pong(struct IRC *bot, char *buff);
 void bot_raw(struct IRC *bot, char *fmt, ...);
 int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, char *target, char *message);
+int bot_parse_service(struct IRC *bot, char *server, char *command, char *me, char *channel, char *msg);
 
 // bot IRC action
 void bot_join(struct IRC *bot, const char *chan);

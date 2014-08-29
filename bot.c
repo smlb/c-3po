@@ -95,6 +95,11 @@ int bot_connect(struct IRC *bot){
 							}
 							if (j == l - 1) continue;
 							start = j + 1;
+						} else if (buf[j] == '=' && wordcount == 3) {
+							wordcount--;
+						} else if (buf[j] == '#' && wordcount == 3) {
+							wordcount--;
+							if (j < l - 1) target = buf + j;
 						} else if (buf[j] == ':' && wordcount == 3) {
 							if (j < l - 1) message = buf + j + 1;
 							break;
@@ -112,8 +117,10 @@ int bot_connect(struct IRC *bot){
 						if (where == NULL || message == NULL) continue;
 						if ((sep = strchr(user, '!')) != NULL) user[sep - user] = '\0';
 						if (where[0] == '#' || where[0] == '&' || where[0] == '+' || where[0] == '!') target = where; else target = user;
-						//printf("[from: %s] [reply-with: %s] [where: %s] [reply-to: %s] %s", user, command, where, target, message);
+						//TODO: Handle the function Return
 						bot_parse_action(bot, user, command, where, target, message);
+					} else {
+						bot_parse_service(bot, user, command, where, target, message);
 					}
 				}
 			}
@@ -127,7 +134,10 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 //	[from: Th3Zer0] [reply-with: PRIVMSG] [where: C-3PO_bot] [reply-to: Th3Zer0] ciao
 // Channel message example
 //	[from: Th3Zer0] [reply-with: PRIVMSG] [where: ##freedomfighter] [reply-to: ##freedomfighter] ciao
-
+	if(DEBUG){
+		printf("[from: %s] [reply-with: %s] [where: %s] [reply-to: %s] %s", user, command, where, target, msg);
+	}
+	
 	if(strstr(msg,"<3") || strstr(msg,"love")){
 		bot_raw(bot,"PRIVMSG %s :%s: so much LOVE\r\n", bot->chan, user);
 		sleep(2);
@@ -278,8 +288,26 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 			bot_raw(bot, "PRIVMSG NickServ :info %s\r\n",argv[1]);
 		}
   }
+  else if(strcasecmp(argv[0], "userlist") == 0) {
+		bot_raw(bot, "NAMES %s\r\n", bot->chan);
+  }
 	return 0;
 }
+
+int bot_parse_service(struct IRC *bot, char *server, char *command, char *me, char *channel, char *msg){
+	if(DEBUG){
+		printf("[server: %s] [command: %s] [me: %s] [channel: %s] %s",server,command,me,channel,msg);
+	}
+	
+	// 353 is the NAMES list
+	if(strcasecmp(command, "353") == 0){
+		//TODO: RegEx needed
+		bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, msg);
+	}
+	
+	return 0;
+}
+
 
 // bot_join: For joining a channel
 void bot_join(struct IRC *bot, const char *chan){
