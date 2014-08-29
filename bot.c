@@ -161,10 +161,9 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 		}
 	}
 	if(strstr(msg,"http://")) {
-		bot_raw(bot, "PRIVMSG %s :Processing...\r\n", bot->chan);
-		if(is_html_link(msg)==1){
-			printf("ok3");
-			char *title;
+		msg = strtok(msg, "\n\r");
+		if(is_html_link(msg)){
+			char *title=malloc(1);
 			if(html_title(msg,title)==0){
 				bot_raw(bot, "PRIVMSG %s :%s\r\n", bot->chan, title);
 			}
