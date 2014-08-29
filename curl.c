@@ -5,6 +5,7 @@
 #include <curl/curl.h>
 #include <sys/types.h>
 #include <regex.h>
+#include "bot.h"
 
 struct MemoryStruct {
   char *memory;
@@ -136,3 +137,42 @@ int is_html_link(char* msg){
 	regfree(&regex);
 	return 0;
 }
+
+int parse_op(struct IRC *bot, char* msg){
+	regex_t regex;
+	size_t nmatch = 10;                                                        
+  regmatch_t pmatch[10];
+  int reti;	
+  char* nick = malloc(1);
+	reti = regcomp(&regex, "@.* ", 0);
+	if( reti ){ fprintf(stderr, "Could not compile regex\n"); exit(1); }
+	reti = regexec(&regex, msg, nmatch, pmatch, 0);
+	if( !reti ){
+		int i=0;
+		while(&pmatch[i]!=NULL){
+			nick = (char*)realloc(nick,pmatch[i].rm_eo - pmatch[i].rm_so-1);
+			strncpy(nick, &msg[pmatch[i].rm_so+1], pmatch[i].rm_eo - pmatch[i].rm_so-1);
+			printf("%d - %s\n",i,nick);
+			
+			bot->op = realloc(bot->op, bot->opn+1 * NICKNAME_LIMIT * sizeof(char));
+			if(bot->op == NULL) {
+				/* out of memory! */ 
+				printf("not enough memory (realloc returned NULL)\n");
+				return 0;
+			}
+			printf("%d\n",i);
+			int offset = bot->opn * NICKNAME_LIMIT * sizeof(char);
+			strcpy(&(bot->op[offset]),nick);
+			bot->opn++;
+			offset = bot->opn * NICKNAME_LIMIT * sizeof(char);
+			bot->op[offset] = 0;
+			i++;
+		}
+		puts("OK6\n");
+		regfree(&regex);
+		return 1;
+	}
+	regfree(&regex);
+	return 0;
+}
+

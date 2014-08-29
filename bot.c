@@ -30,6 +30,8 @@ void bot_init(struct IRC *bot, char *s, char *p, char *n, char *c){
 	strcpy(bot->port, p);
 	strcpy(bot->nick, n);
 	strcpy(bot->chan, c);
+	bot->op = (char*)malloc(1 * NICKNAME_LIMIT * sizeof(char));
+	bot->opn = 0;
 }
 
 // Send message over the connection <3
@@ -315,7 +317,10 @@ int bot_parse_service(struct IRC *bot, char *server, char *command, char *me, ch
 	// 353 is the NAMES list
 	if(strcasecmp(command, "353") == 0){
 		//TODO: RegEx needed
+		printf("%s\n",bot->op);
+		parse_op(bot,msg);
 		//bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, msg);
+		printf("%s\n",bot->op);
 	}
 	
 	return 0;

@@ -3,7 +3,7 @@
  *
  *    Description:  
  *
- *        Version:  0.1.3
+ *        Version:  0.1.5
  *        Created:  08/26/2014
  *       Revision:  N/A
  *       Compiler:  gcc
@@ -18,15 +18,20 @@
 #ifndef __IRCBOT_H
 #define __IRCBOT_H
 
+#include <netdb.h> // for struct addrinfo
+#include <sys/types.h>
+
 // Semantic Versioning
 #define version_major 0
 #define version_minor 1
-#define version_patch 3
+#define version_patch 5
 // 0 stand for false
 #define DEBUG 0
 
+#define NICKNAME_LIMIT 20
+
 // Simple struct with bot configuration ;)
-struct IRC{
+struct IRC {
 	char server[100];
 	char port[5];
 	char nick[15];
@@ -35,6 +40,8 @@ struct IRC{
 	struct addrinfo hints, *res;
 	int conn;
 	char sbuf[512];
+	char *op;
+	int opn;
 }; 
 
 // All bot-related function should start with 'bot_'
