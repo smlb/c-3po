@@ -15,7 +15,7 @@ CC = gcc
 # How can i remove file?
 RM = 'rm'
 # Object file
-OBJ = main.o bot.o curl.o
+OBJ = main.o bot.o curl.o op.o
 BINOBJ = $(OBJ:%.o=bin/%.o)
 # Header file
 DEPS = bot.h

@@ -13,6 +13,7 @@
 #include <regex.h>
 #include "bot.h"
 #include "curl.h"
+#include "op.h"
 
 // Magic function to throw error to stderr or other file
 void c_error(FILE *out, const char *fmt, ...){
@@ -30,7 +31,7 @@ void bot_init(struct IRC *bot, char *s, char *p, char *n, char *c){
 	strcpy(bot->port, p);
 	strcpy(bot->nick, n);
 	strcpy(bot->chan, c);
-	bot->op = (char*)malloc(1 * NICKNAME_LIMIT * sizeof(char));
+	bot->op = (char*)malloc(1);
 	bot->opn = 0;
 }
 
@@ -109,6 +110,9 @@ int bot_connect(struct IRC *bot){
 						} else if (buf[j] == ':' && wordcount == 3) {
 							if (j < l - 1) message = buf + j + 1;
 							break;
+						} else if (wordcount == 3)  {
+							if (j < l - 1) message = buf + j;
+							break;
 						}
 					}
 					
@@ -126,6 +130,8 @@ int bot_connect(struct IRC *bot){
 						//TODO: Handle the function Return
 						bot_parse_action(bot, user, command, where, target, message);
 					} else {
+						//clean the message
+						message = strtok(message, "\n\r");
 						bot_parse_service(bot, user, command, where, target, message);
 					}
 				}
@@ -210,10 +216,18 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 		bot_raw(bot,"PRIVMSG %s :%d\r\n", bot->chan, i);
 	}
 	else if(strcasecmp(argv[0], "quit") == 0){
-		bot_quit(bot);
+		if(is_op(bot,user)==1){
+			bot_quit(bot);
+		} else {
+			bot_raw(bot,"PRIVMSG %s :Pff, %s go away!\r\n", bot->chan, user);
+		}
 	}
 	else if(strcasecmp(argv[0], "away") == 0){
-		bot_away(bot);
+		if(is_op(bot,user)==1){
+			bot_away(bot);
+		} else {
+			bot_raw(bot,"PRIVMSG %s :Pff, %s go away!\r\n", bot->chan, user);
+		}
 	}
 	else if((strcasecmp(argv[0], "google") == 0) && argv[1] != NULL){
 		if(argv[2] != NULL){
@@ -311,16 +325,25 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 
 int bot_parse_service(struct IRC *bot, char *server, char *command, char *me, char *channel, char *msg){
 	if(DEBUG){
-		printf("[server: %s] [command: %s] [me: %s] [channel: %s] %s",server,command,me,channel,msg);
+		printf("[server: %s] [command: %s] [me: %s] [channel: %s] %s\n",server,command,me,channel,msg);
 	}
 	
 	// 353 is the NAMES list
 	if(strcasecmp(command, "353") == 0){
-		//TODO: RegEx needed
-		printf("%s\n",bot->op);
 		parse_op(bot,msg);
-		//bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, msg);
-		printf("%s\n",bot->op);
+		print_op(bot);
+	}
+	if(strcasecmp(command, "MODE") ==0){
+		if((msg[0]=='+') && (msg[1]=='o')){
+			// if it's not already in the oplist
+			if(is_op(bot,&msg[3])==0){
+				add_op(bot,&msg[3]);
+				print_op(bot);
+			}
+		}
+		else if((msg[0]=='-') && (msg[1]=='o')){
+			//rm_op(bot,&msg[2]);
+		}
 	}
 	
 	return 0;
