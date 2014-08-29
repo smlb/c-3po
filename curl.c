@@ -55,6 +55,7 @@ int html_title(char* link,char* title){
   /* no progress meter please */
   curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1L);
   curl_easy_setopt(curl_handle,CURLOPT_FOLLOWLOCATION,1);
+  curl_easy_setopt(curl_handle,CURLOPT_VERBOSE,1);
 
     /* send all data to this function  */ 
   curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
@@ -65,7 +66,17 @@ int html_title(char* link,char* title){
   /* some servers don't like requests that are made without a user-agent
      field, so we provide one */ 
   curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+	
+	int offset = 0;
+	int size = 10*1024;
 
+	char range[256];
+	struct curl_slist *headers = NULL;
+	snprintf(range, 256, "Range: bytes=%d-%d", offset, offset+size-1);
+	printf("%s",range);
+	headers = curl_slist_append(headers, range);
+	curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);
+	
   /* get it! */
   res = curl_easy_perform(curl_handle);
 	
@@ -94,7 +105,10 @@ int html_title(char* link,char* title){
 		}	else{ ireturn=1; }
     regfree(&regex);
   }
- 
+	
+	curl_slist_free_all(headers);
+	headers = NULL;
+	
   /* cleanup curl stuff */ 
   curl_easy_cleanup(curl_handle);
  

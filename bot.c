@@ -315,7 +315,7 @@ int bot_parse_service(struct IRC *bot, char *server, char *command, char *me, ch
 	// 353 is the NAMES list
 	if(strcasecmp(command, "353") == 0){
 		//TODO: RegEx needed
-		bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, msg);
+		//bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, msg);
 	}
 	
 	return 0;
