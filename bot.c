@@ -8,7 +8,11 @@
 #include <stdarg.h>
 #include <math.h> 
 #include <time.h>
+#include <curl/curl.h>
+#include <sys/types.h>
+#include <regex.h>
 #include "bot.h"
+#include "curl.h"
 
 // Magic function to throw error to stderr or other file
 void c_error(FILE *out, const char *fmt, ...){
@@ -156,6 +160,16 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 			bot_raw(bot, "PRIVMSG %s :%s\r\n", bot->chan, msg);
 		}
 	}
+	if(strstr(msg,"http://")) {
+		bot_raw(bot, "PRIVMSG %s :Processing...\r\n", bot->chan);
+		if(is_html_link(msg)==1){
+			printf("ok3");
+			char *title;
+			if(html_title(msg,title)==0){
+				bot_raw(bot, "PRIVMSG %s :%s\r\n", bot->chan, title);
+			}
+		}
+  }
 	
 	if(*msg != '!')
 		return 1;

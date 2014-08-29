@@ -15,12 +15,12 @@ CC = gcc
 # How can i remove file?
 RM = 'rm'
 # Object file
-OBJ = main.o bot.o
+OBJ = main.o bot.o curl.o
 BINOBJ = $(OBJ:%.o=bin/%.o)
 # Header file
 DEPS = bot.h
 # Folder with object file
-CFLAGS=-Wall -lm -std=gnu99 -I.
+CFLAGS=-Wall -lm -lcurl -std=gnu99 -I. -I/usr/include/curl
 OBJDIR = bin
 
 # Compile Header and C-Source into Object file
