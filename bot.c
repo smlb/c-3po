@@ -177,6 +177,9 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 			}
 		}
   }
+  if((msg[0] == '#') && (msg[1]=='!')) {
+		bot_raw(bot, "PRIVMSG %s :Shebang!\r\n", bot->chan, title);
+	}
 	
 	if(*msg != '!')
 		return 1;
