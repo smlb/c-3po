@@ -147,7 +147,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 // Channel message example
 //	[from: Th3Zer0] [reply-with: PRIVMSG] [where: ##freedomfighter] [reply-to: ##freedomfighter] ciao
 	if(DEBUG){
-		printf("[from: %s] [reply-with: %s] [where: %s] [reply-to: %s] %s", user, command, where, target, msg);
+		printf("[from: %s] [reply-with: %s] [where: %s] [reply-to: %s] \"%s\"", user, command, where, target, msg);
 	}
 	
 	if(strstr(msg,"<3") || strstr(msg,"love")){
@@ -177,8 +177,9 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 			}
 		}
   }
+  printf("%c %c",msg[0],msg[1]);
   if((msg[0] == '#') && (msg[1]=='!')) {
-		bot_raw(bot, "PRIVMSG %s :Shebang!\r\n", bot->chan, title);
+		bot_raw(bot, "PRIVMSG %s :Shebang!\r\n", bot->chan);
 	}
 	
 	if(*msg != '!')
@@ -353,20 +354,26 @@ int bot_parse_service(struct IRC *bot, char *server, char *command, char *me, ch
 	// 353 is the NAMES list
 	if(strcasecmp(command, "353") == 0){
 		parse_op(bot,msg);
-		print_op(bot);
+		if(DEBUG){
+			print_op(bot);
+		}
 	}
 	if(strcasecmp(command, "MODE") ==0){
 		if((msg[0]=='+') && (msg[1]=='o')){
 			// if it's not already in the oplist
 			if(is_op(bot,&msg[3])==-1){
 				add_op(bot,&msg[3]);
-				print_op(bot);
+				if(DEBUG){
+					print_op(bot);
+				}
 			}
 		}
 		else if((msg[0]=='-') && (msg[1]=='o')){
 			if(is_op(bot,&msg[3])!=-1){
 				rm_op(bot,&msg[3]);
-				print_op(bot);
+				if(DEBUG){
+					print_op(bot);
+				}
 			}
 		}
 	}
