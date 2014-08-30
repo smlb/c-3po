@@ -1,0 +1,7 @@
+TODO List
+
+- Auto re-join when kicked
+- Check the internet connection and join when avviable (now segfault)
+- Alert when an user flood after 5 messages
+- Kick an user that flood 10 messagses
+- Add PASS when connecting (password readed from configuration file)
