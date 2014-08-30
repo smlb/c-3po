@@ -313,7 +313,17 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
     bot_raw(bot, "PRIVMSG %s :C-3PO never segfault...and never lie.\r\n", bot->chan);
   }
   else if(strcasecmp(argv[0], "yt") == 0) {
-    bot_raw(bot, "PRIVMSG %s :%s Dowload and extract .mp3 from a video: `youtube-dl --extract-audio --audio-format mp3 link_here`\r\n", bot->chan, user);
+		if(argv[1] != NULL) {
+			char *yt;
+			strtok(argv[1], "?");	
+			yt = strtok(NULL, "?");
+			if(yt[0]=='v' && yt[1]=='='){
+				yt = strtok(&yt[2], "&");
+				bot_raw(bot, "PRIVMSG %s :%s Click Here: http://www.flvto.com/it/download/yt_%s/\r\n", bot->chan, user, yt);
+			}
+    } else {
+			bot_raw(bot, "PRIVMSG %s :%s Dowload and extract .mp3 from a video: `youtube-dl --extract-audio --audio-format mp3 link_here`\r\n", bot->chan, user);
+		}
   }
   else if(strcasecmp(argv[0], "lastseen") == 0) {
 		if(argv[1] != NULL) {
