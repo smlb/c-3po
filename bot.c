@@ -243,7 +243,13 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 			bot_raw(bot,"PRIVMSG %s :%s: https://lmddgtfy.net/?q=%s\r\n", bot->chan, user, argv[1]);	
 		}
 	}
-	else if(strcasecmp(argv[0], "sqrt") == 0) {
+  else if(strcasecmp(argv[0], "reddit") == 0) {
+    if(argv[1] != NULL) 
+      bot_raw(bot, "PRIVMSG %s :http://www.reddit.com/search?q=%s\r\n", bot->chan, argv[1]);
+    else
+      bot_raw(bot, "PRIVMSG %s :%s: http://www.reddit.com/r/random\r\n", bot->chan, user);
+  }
+  else if(strcasecmp(argv[0], "sqrt") == 0) {
 		double x = atof(argv[1]);
 		bot_raw(bot,"PRIVMSG %s :%s: %g\r\n", bot->chan, user, sqrt(x));
 	}
@@ -400,7 +406,7 @@ void bot_msg(struct IRC *bot, const char *channel, const char *data){
 }
 void bot_help(struct IRC *bot, char* cmd){
 	if(cmd==NULL){
-		char h1[] = "!help !ping !quit !google !ddg !sqrt !archwiki !whoami !attack !lookup !away !life !rms !random !privacy !segfault !future <3";
+		char h1[] = "!help !ping !quit !google !ddg !reddit !sqrt !archwiki !whoami !attack !lookup !away !life !rms !random !privacy !segfault !future <3";
 		bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
 		char h2[] = "Type !help <cmd> for information about that command.";
 		bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h2);
@@ -413,6 +419,10 @@ void bot_help(struct IRC *bot, char* cmd){
 			char h1[] = "Quit the bot";
 			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
 		}
+    else if(strcasecmp(cmd, "reddit") == 0){
+      char h1[] = "Print the link of a reddit search. Take <keyword> as argument";
+      bot_raw(bot, "PRIVMSG %s :%s\r\n", bot->chan, h1);
+    }
 		else if(strcasecmp(cmd, "google") == 0){
 			char h1[] = "Print the link of a google search. Take <keyword> as argument";
 			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
