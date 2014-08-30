@@ -216,14 +216,14 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 		bot_raw(bot,"PRIVMSG %s :%d\r\n", bot->chan, i);
 	}
 	else if(strcasecmp(argv[0], "quit") == 0){
-		if(is_op(bot,user)==1){
+		if(is_op(bot,user)!=-1){
 			bot_quit(bot);
 		} else {
 			bot_raw(bot,"PRIVMSG %s :Pff, %s go away!\r\n", bot->chan, user);
 		}
 	}
 	else if(strcasecmp(argv[0], "away") == 0){
-		if(is_op(bot,user)==1){
+		if(is_op(bot,user)!=-1){
 			bot_away(bot);
 		} else {
 			bot_raw(bot,"PRIVMSG %s :Pff, %s go away!\r\n", bot->chan, user);
@@ -339,13 +339,16 @@ int bot_parse_service(struct IRC *bot, char *server, char *command, char *me, ch
 	if(strcasecmp(command, "MODE") ==0){
 		if((msg[0]=='+') && (msg[1]=='o')){
 			// if it's not already in the oplist
-			if(is_op(bot,&msg[3])==0){
+			if(is_op(bot,&msg[3])==-1){
 				add_op(bot,&msg[3]);
 				print_op(bot);
 			}
 		}
 		else if((msg[0]=='-') && (msg[1]=='o')){
-			//rm_op(bot,&msg[2]);
+			if(is_op(bot,&msg[3])!=-1){
+				rm_op(bot,&msg[3]);
+				print_op(bot);
+			}
 		}
 	}
 	
@@ -424,10 +427,10 @@ void bot_help(struct IRC *bot, char* cmd){
 			char h1[] = "Let's kick some asses";
 			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
 		}
-        else if(strcasecmp(cmd, "future") == 0){
-            char h1[] = "the future we would like to.";
-            bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
-        }
+		else if(strcasecmp(cmd, "future") == 0){
+		    char h1[] = "the future we would like to.";
+		    bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
+		}
 		else if(strcasecmp(cmd, "lookup") == 0){
 			char h1[] = "Perform a DNS Lookup. Take <hostname> as argument";
 			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
