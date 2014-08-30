@@ -312,6 +312,9 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
   else if(strcasecmp(argv[0], "segfault") == 0) {
     bot_raw(bot, "PRIVMSG %s :C-3PO never segfault...and never lie.\r\n", bot->chan);
   }
+  else if(strcasecmp(argv[0], "yt") == 0) {
+    bot_raw(bot, "PRIVMSG %s :%s Dowload and extract .mp3 from a video: `youtube-dl --extract-audio --audio-format mp3 link_here`\r\n", bot->chan, user);
+  }
   else if(strcasecmp(argv[0], "lastseen") == 0) {
 		if(argv[1] != NULL) {
 			bot_raw(bot, "PRIVMSG NickServ :info %s\r\n",argv[1]);
@@ -406,7 +409,7 @@ void bot_help(struct IRC *bot, char* cmd){
 			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
 		}
 		else if(strcasecmp(cmd, "sqrt") == 0){
-			char h1[] = "Performthe square root of a number. Take <number> as argument";
+			char h1[] = "Perform the square root of a number. Take <number> as argument";
 			bot_raw(bot,"PRIVMSG %s :%s\r\n", bot->chan, h1);
 		}
 		else if(strcasecmp(cmd, "archwiki") == 0){
