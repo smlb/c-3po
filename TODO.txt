@@ -5,3 +5,4 @@ TODO List
 - Alert when an user flood after 5 messages
 - Kick an user that flood 10 messagses
 - Add PASS when connecting (password readed from configuration file)
+- NCURSES for sending message
