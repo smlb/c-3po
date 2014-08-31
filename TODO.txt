@@ -6,3 +6,6 @@ TODO List
 - Kick an user that flood 10 messagses
 - Add PASS when connecting (password readed from configuration file)
 - NCURSES for sending message
+- Anti-Flood
+- Log / Timing system
+- Auto Private-Message Responder
