@@ -225,6 +225,14 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 			bot_raw(bot,"PRIVMSG %s :Pff, %s go away!\r\n", bot->chan, user);
 		}
 	}
+	else if(strcasecmp(argv[0], "unaway") == 0){
+		if(is_op(bot,user)!=-1){
+			bot_raw(bot,"AWAY :\0\r\n", bot->chan, user);
+			//bot_raw(bot,"AWAY\r\n");
+		} else {
+			bot_raw(bot,"PRIVMSG %s :Pff, %s go away!\r\n", bot->chan, user);
+		}
+	}
 	else if(strcasecmp(argv[0], "away") == 0){
 		if(is_op(bot,user)!=-1){
 			bot_away(bot);
