@@ -9,16 +9,15 @@ C-3PO follow the IRC Standard RFC at [http://tools.ietf.org/html/rfc1459](http:/
 ## Compile the source
 From a terminal type:
 
-$ ~make `
+$ `make`
 
 ## Start the bot
+```
 Sintax: ./c-3po <server> <port> <nick> <chan>
-
 Sintax: ./c-3po <server> <port> <nick> <chan> <config_file>
-
 Sintax: ./c-3po <config_file>
-
 Insert chan escaped with \\ (\\#free or \\#\\#beer)
+```
 
 example:
 $ `./c-3po irc.freenode.org 6667 C3PO \#\#freedomfighter `
