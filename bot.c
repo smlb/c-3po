@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdarg.h>
-#include <math.h> 
+#include <math.h>
 #include <time.h>
 #include <curl/curl.h>
 #include <sys/types.h>
@@ -51,24 +51,24 @@ int bot_connect(struct IRC *bot){
 	int i, j, l, sl, o = -1, start, wordcount;
 	char buf[513];
 
-	// So many socket things :(	
+	// So many socket things :(
 	memset(&(bot->hints), 0, sizeof bot->hints);
 	bot->hints.ai_family = AF_INET;
 	bot->hints.ai_socktype = SOCK_STREAM;
 	getaddrinfo(bot->server, bot->port, &(bot->hints), &(bot->res));
 	bot->conn = socket(bot->res->ai_family, bot->res->ai_socktype, bot->res->ai_protocol);
-	
+
 	// Try to connect
 	if(connect(bot->conn, bot->res->ai_addr, bot->res->ai_addrlen)<0){
 		c_error(stderr,"Error: Connection Failed\n");
 		return -1;
 	}
-	
+
 	// From RFC: USER <username> <hostname> <servername> <realname>
 	bot_raw(bot,"USER C-3PO_bot NewRepublic StarWars :C3PO\r\n");
 	// From RFC: NICK <nickname>
   bot_raw(bot,"NICK %s\r\n", bot->nick);
-	
+
 	// All the program remain here waiting for channel-input
 	while ((sl = read(bot->conn, bot->sbuf, 512))) {
 		// Read the message char by char
@@ -80,10 +80,10 @@ int bot_connect(struct IRC *bot){
 				buf[o + 1] = '\0';
 				l = o;
 				o = -1;
-				
+
 				// Log into the terminal
 				printf(">> %s", buf);
-				
+
 				// When there is a PING, reply with PONG
 				if (!strncmp(buf, "PING", 4)) {
 					buf[1] = 'O';
@@ -115,11 +115,11 @@ int bot_connect(struct IRC *bot){
 							break;
 						}
 					}
-					
+
 					if (wordcount < 2) continue;
-					
+
 					if (!strncmp(command, "001", 3) && bot->chan != NULL) {
-						// From RFC: JOIN <channel> [key]  
+						// From RFC: JOIN <channel> [key]
 						// Maybe we can support password protected channel (?)
 						bot_raw(bot,"JOIN %s\r\n", bot->chan);
 						bot_raw(bot,"PRIVMSG %s :Hello world!\r\n", bot->chan);
@@ -136,7 +136,7 @@ int bot_connect(struct IRC *bot){
 					}
 				}
 			}
-		} 
+		}
 	}
 	return 0;
 }
@@ -149,7 +149,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 	if(DEBUG){
 		printf("[from: %s] [reply-with: %s] [where: %s] [reply-to: %s] \"%s\"", user, command, where, target, msg);
 	}
-	
+
 	if(strstr(msg,"<3") || strstr(msg,"love")){
 		bot_raw(bot,"PRIVMSG %s :%s: so much LOVE\r\n", bot->chan, user);
 		sleep(2);
@@ -180,7 +180,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
   if((msg[0] == '#') && (msg[1]=='!')) {
 		bot_raw(bot, "PRIVMSG %s :Shebang!\r\n", bot->chan);
 	}
-	
+
 	if(*msg != '!')
 		return 1;
 
@@ -188,9 +188,9 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 	//char *arg[6];
 	int i=0;
 	char **ap, *argv[10];
-	
+
 	// Clean the string
-	cmd = strtok(msg, "!");	
+	cmd = strtok(msg, "!");
 	cmd = strtok(cmd, "\n\r");
 	// Split the argument
 	for(ap = argv; (*ap = strsep(&cmd, " \t")) != NULL;){
@@ -207,7 +207,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 	// the command is in the first argument
 	if(argv[0] == NULL)
 		return 1;
-	
+
 	// Fuck That
 	if(strcasecmp(argv[0], "ping") == 0){
 		bot_raw(bot,"PRIVMSG %s :pong\r\n", bot->chan);
@@ -245,38 +245,42 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 			bot_raw(bot,"PRIVMSG %s :%s: http://lmgtfy.com/?q=%s\r\n", bot->chan, argv[2], argv[1]);
 		} else {
 			bot_raw(bot,"PRIVMSG %s :%s: http://lmgtfy.com/?q=%s\r\n", bot->chan, user, argv[1]);
-		}	
+		}
 	}
 	else if((strcasecmp(argv[0], "ddg") == 0) && argv[1] != NULL){
 		if(argv[2] != NULL){
 			bot_raw(bot,"PRIVMSG %s :%s: https://lmddgtfy.net/?q=%s\r\n", bot->chan, argv[2], argv[1]);
 		} else {
-			bot_raw(bot,"PRIVMSG %s :%s: https://lmddgtfy.net/?q=%s\r\n", bot->chan, user, argv[1]);	
+			bot_raw(bot,"PRIVMSG %s :%s: https://lmddgtfy.net/?q=%s\r\n", bot->chan, user, argv[1]);
 		}
 	}
   else if(strcasecmp(argv[0], "reddit") == 0) {
-    if(argv[1] != NULL) 
+    if(argv[1] != NULL)
       bot_raw(bot, "PRIVMSG %s :http://www.reddit.com/search?q=%s\r\n", bot->chan, argv[1]);
     else
       bot_raw(bot, "PRIVMSG %s :%s: http://www.reddit.com/r/random\r\n", bot->chan, user);
   }
   else if(strcasecmp(argv[0], "sqrt") == 0) {
-		double x = atof(argv[1]);
-		bot_raw(bot,"PRIVMSG %s :%s: %g\r\n", bot->chan, user, sqrt(x));
+		if(argv[1] != NULL) {
+			double x = atof(argv[1]);
+			bot_raw(bot,"PRIVMSG %s :%s: %g\r\n", bot->chan, user, sqrt(x));
+		} else {
+			bot_raw(bot, "PRIVMSG %s :%s: you need to provide at least one arguments!\r\n", bot->chan, user);
+		}
 	}
-  else if(strcasecmp(argv[0], "sum") == 0) { 
+  else if(strcasecmp(argv[0], "sum") == 0) {
     if(argv[2] != NULL) {
       double i = atof(argv[1]);
       double j = atof(argv[2]);
       bot_raw(bot, "PRIVMSG %s :%s: %g\r\n", bot->chan, user, i+j);
     } else {
       bot_raw(bot, "PRIVMSG %s :%s: you need to provide at least two arguments!\r\n", bot->chan, user);
-    } 
+    }
   }
   else if((strcasecmp(argv[0], "archwiki") == 0) && argv[1] != NULL) {
 		if(argv[2] != NULL) {
 			bot_raw(bot,"PRIVMSG %s :%s: https://wiki.archlinux.org/index.php/%s\r\n", bot->chan, argv[2], argv[1]);
-		} else { 
+		} else {
 			bot_raw(bot,"PRIVMSG %s :%s: https://wiki.archlinux.org/index.php/%s\r\n", bot->chan, user, argv[1]);
 		}
 	}
@@ -318,7 +322,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
   }
   else if(strcasecmp(argv[0], "future") == 0 ) {
     bot_raw(bot, "PRIVMSG %s :Innovation is not what innovators do, but what customers adopt...this is freedomfight!\r\n", bot->chan);
-  } 
+  }
   else if(strcasecmp(argv[0], "privacy") == 0 ) {
     if(argv[1] != NULL) {
       bot_raw(bot, "PRIVMSG %s :%s: https://eff.org | https://prism-break.org | https://torproject.org | http://stallman.org\r\n", bot->chan, argv[1]);
@@ -332,7 +336,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
   else if(strcasecmp(argv[0], "yt") == 0) {
 		if(argv[1] != NULL) {
 			char *yt;
-			strtok(argv[1], "?");	
+			strtok(argv[1], "?");
 			yt = strtok(NULL, "?");
 			if(yt[0]=='v' && yt[1]=='='){
 				yt = strtok(&yt[2], "&");
@@ -357,7 +361,7 @@ int bot_parse_service(struct IRC *bot, char *server, char *command, char *me, ch
 	if(DEBUG){
 		printf("[server: %s] [command: %s] [me: %s] [channel: %s] %s\n",server,command,me,channel,msg);
 	}
-	
+
 	// 353 is the NAMES list
 	if(strcasecmp(command, "353") == 0){
 		parse_op(bot,msg);
@@ -384,7 +388,7 @@ int bot_parse_service(struct IRC *bot, char *server, char *command, char *me, ch
 			}
 		}
 	}
-	
+
 	return 0;
 }
 
