@@ -26,12 +26,14 @@ void c_error(FILE *out, const char *fmt, ...){
 }
 
 // Initialize the bot in the struct
-void bot_init(struct IRC *bot, char *s, char *p, char *n, char *c){
+void bot_init(struct IRC *bot, char *s, char *p, char *n, char *c, char *z){
 	strcpy(bot->server, s);
 	strcpy(bot->port, p);
 	strcpy(bot->nick, n);
 	strcpy(bot->chan, c);
-	bot->op = (char*)malloc(1);
+	strcpy(bot->pass, z);
+    
+    bot->op = (char*)malloc(1);
 	bot->opn = 0;
 }
 
@@ -121,7 +123,7 @@ int bot_connect(struct IRC *bot){
 					if (!strncmp(command, "001", 3) && bot->chan != NULL) {
 						// From RFC: JOIN <channel> [key]
 						// Maybe we can support password protected channel (?)
-						bot_raw(bot,"JOIN %s\r\n", bot->chan);
+						bot_raw(bot,"JOIN %s %s\r\n", bot->chan, bot->pass);
 						bot_raw(bot,"PRIVMSG %s :Hello world!\r\n", bot->chan);
 					} else if (!strncmp(command, "PRIVMSG", 7) || !strncmp(command, "NOTICE", 6)) {
 						if (where == NULL || message == NULL) continue;

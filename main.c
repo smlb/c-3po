@@ -13,8 +13,8 @@
 #include "bot.h"
 
 // Prototypes
-int load_config(char *filename, char* s, char *p, char* n, char* c);
-int save_config(char *filename, char *s, char *p, char *n, char *c);
+int load_config(char *filename, char* s, char *p, char* n, char* c, char *z);
+int save_config(char *filename, char *s, char *p, char *n, char *c, char *z);
 
 // Global Struct variable (I know isn't a good idea)
 struct IRC bot;
@@ -25,13 +25,13 @@ int main(int argc, char *argv[]){
 	printf("C-3PO - %s\n  This software is under the GPL License\n", version);
 	
 	// 5 argument - start the bot
-	if(argc == 5){
-		bot_init(&bot, argv[1], argv[2], argv[3], argv[4]);
+	if(argc == 6){
+		bot_init(&bot, argv[1], argv[2], argv[3], argv[4], argv[5]);
 	}
 	// 6 argument - save configuration and start the bot
-	else if(argc == 6){
-		save_config(argv[5], argv[1], argv[2], argv[3], argv[4]);
-		bot_init(&bot, argv[1], argv[2], argv[3], argv[4]);
+	else if(argc == 7){
+		save_config(argv[5], argv[1], argv[2], argv[3], argv[4], argv[6]);
+		bot_init(&bot, argv[1], argv[2], argv[3], argv[4], argv[5]);
 	}
 	// 2 argument - load configuration and start the bot
 	else if(argc == 2){
@@ -39,9 +39,10 @@ int main(int argc, char *argv[]){
 		char port[5];
 		char nick[15];
 		char chan[20];
-		int result = load_config(argv[argc-1], server, port, nick, chan);
+		char pass[10];
+        int result = load_config(argv[argc-1], server, port, nick, chan, pass);
 		if(result == 0){
-			bot_init(&bot, server, port, nick, chan);
+			bot_init(&bot, server, port, nick, chan, pass );
 		}
 		else {
 			return 1;
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]){
 }
 
 // Load the configuration from file
-int load_config(char *filename, char *s, char *p, char *n, char *c){
+int load_config(char *filename, char *s, char *p, char *n, char *c, char *z){
 	FILE *f;
 	char row[128+1];
 	
@@ -92,6 +93,9 @@ int load_config(char *filename, char *s, char *p, char *n, char *c){
 			case 3:
 				strcpy(c,row);
 				break;
+            case 4:
+                strcpy(z, row);
+                break;
 		}
   }
 	
@@ -100,7 +104,7 @@ int load_config(char *filename, char *s, char *p, char *n, char *c){
 }
 
 // Save configuration on file
-int save_config(char *filename, char *s, char *p, char *n, char *c){
+int save_config(char *filename, char *s, char *p, char *n, char *c, char *z ){
 	FILE *f;
 	
 	f = fopen(filename,"w");

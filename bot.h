@@ -36,7 +36,8 @@ struct IRC {
 	char port[5];
 	char nick[15];
 	char chan[20];
-	// Connection
+	char pass[10];
+    // Connection
 	struct addrinfo hints, *res;
 	int conn;
 	char sbuf[512];
@@ -45,7 +46,7 @@ struct IRC {
 }; 
 
 // All bot-related function should start with 'bot_'
-void bot_init(struct IRC *bot, char *s, char *p, char *n, char *c);
+void bot_init(struct IRC *bot, char *s, char *p, char *n, char *c, char *z);
 int bot_connect(struct IRC *bot);
 void bot_pong(struct IRC *bot, char *buff);
 void bot_raw(struct IRC *bot, char *fmt, ...);
