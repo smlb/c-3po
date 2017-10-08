@@ -153,17 +153,13 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
 	}
 
 	if(strstr(msg,"<3") || strstr(msg,"love")){
-		bot_raw(bot,"PRIVMSG %s :%s: so much LOVE\r\n", bot->chan, user);
-		sleep(2);
-    bot_action(bot,bot->chan,"feeling lovely");
+		bot_raw(bot,"PRIVMSG %s :%s: So much dick\r\n", bot->chan, user);
 	}
 	if(strstr(msg,"fuck")){
-		bot_raw(bot,"PRIVMSG %s :%s: don't say bad words!\r\n", bot->chan, user);
-		sleep(2);
-    bot_action(bot,bot->chan,"is angry");
+		bot_raw(bot,"PRIVMSG %s :%s: strip ; touch ; fsck you mother!\r\n", bot->chan, user);
 	}
-	if(strstr(msg,"C-3PO_bot: how are you?")) {
-    bot_raw(bot, "PRIVMSG %s :%s: not bad and you?\r\n", bot->chan, user);
+	if(strstr(msg,"bottanbot: how are you?")) {
+    bot_raw(bot, "PRIVMSG %s :%s: horny and you?\r\n", bot->chan, user);
   }
 	if(strcasecmp(user,"NickServ")==0){
 		if(strstr(msg,"Last seen")){
@@ -313,7 +309,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
     bot_raw(bot, "PRIVMSG %s :%s: 42\r\n", bot->chan, user);
   }
   else if(strcasecmp(argv[0], "rms") == 0) {
-    bot_raw(bot, "PRIVMSG %s :Stallman approves.\r\n", bot->chan);
+    bot_raw(bot, "PRIVMSG %s :Stallman approves with his dick.\r\n", bot->chan);
   }
   else if(strcasecmp(argv[0], "information") == 0) {
     bot_raw(bot, "PRIVMSG %s :Information is power. But like all the power there are those who want to keep it for themselves -- ~Aaron Swartz\r\n", bot->chan);
@@ -323,7 +319,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
     bot_raw(bot, "PRIVMSG %s :%s: here you are a $RANDOM number -> %d\r\n", bot->chan, user, rand());
   }
   else if(strcasecmp(argv[0], "future") == 0 ) {
-    bot_raw(bot, "PRIVMSG %s :Innovation is not what innovators do, but what customers adopt...this is freedomfight!\r\n", bot->chan);
+    bot_raw(bot, "PRIVMSG %s :There is no future, go suck a bunch of dicks!\r\n", bot->chan);
   }
   else if(strcasecmp(argv[0], "privacy") == 0 ) {
     if(argv[1] != NULL) {
@@ -333,7 +329,7 @@ int bot_parse_action(struct IRC *bot, char *user, char *command, char *where, ch
     }
   }
   else if(strcasecmp(argv[0], "segfault") == 0) {
-    bot_raw(bot, "PRIVMSG %s :C-3PO never segfault...and never lie.\r\n", bot->chan);
+    bot_raw(bot, "PRIVMSG %s :I never segfault...and never lie.\r\n", bot->chan);
   }
   else if(strcasecmp(argv[0], "yt") == 0) {
 		if(argv[1] != NULL) {
